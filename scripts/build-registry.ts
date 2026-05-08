@@ -25,32 +25,49 @@ export type RegistryItem = {
   type: "registry:theme" | "registry:ui";
   description: string;
   registryDependencies: string[];
-  cssVars: { theme: Record<string, Record<string, string>> };
-  css: Record<string, unknown>;
+  cssVars?: {
+    theme?: Record<string, string>;
+    light?: Record<string, string>;
+    dark?: Record<string, string>;
+  };
+  css?: Record<string, Record<string, string>>;
   files?: { path: string; content: string; type: "registry:ui" }[];
   dependencies?: string[];
 };
 
-function tokensToCssVars(tokens: ThemeTokens): Record<string, string> {
+// Tailwind v4 @theme inline mappings — extension tokens that shadcn init doesn't ship
+const EXTENSION_THEME_VARS: Record<string, string> = {
+  "color-success": "var(--success)",
+  "color-success-foreground": "var(--success-foreground)",
+  "color-warning": "var(--warning)",
+  "color-warning-foreground": "var(--warning-foreground)",
+};
+
+function tokensToCssDecls(tokens: ThemeTokens): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const [key, value] of Object.entries(tokens)) out[key] = value;
+  for (const [key, value] of Object.entries(tokens)) {
+    out[`--${key}`] = value;
+  }
   return out;
 }
 
-export function buildRegistryItem(meta: ThemeMeta, rawCss: string): RegistryItem {
+export function buildRegistryItem(meta: ThemeMeta): RegistryItem {
+  const lightSel = `[data-theme="${meta.id}"]`;
+  const darkSel = `[data-theme="${meta.id}"][data-mode="dark"]`;
+
   return {
     $schema: "https://ui.shadcn.com/schema/registry-item.json",
     name: `theme-${meta.id}`,
     type: "registry:theme",
     description: meta.description,
-    registryDependencies: meta.registryDependencies.map((d) => `${REGISTRY_BASE_URL}/${d}.json`),
-    cssVars: {
-      theme: {
-        [`${meta.id}-light`]: tokensToCssVars(meta.tokens.light),
-        [`${meta.id}-dark`]: tokensToCssVars(meta.tokens.dark),
-      },
+    registryDependencies: meta.registryDependencies.map(
+      (d) => `${REGISTRY_BASE_URL}/${d}.json`
+    ),
+    cssVars: { theme: EXTENSION_THEME_VARS },
+    css: {
+      [lightSel]: tokensToCssDecls(meta.tokens.light),
+      [darkSel]: tokensToCssDecls(meta.tokens.dark),
     },
-    css: { __raw: { content: rawCss } },
   };
 }
 
@@ -61,8 +78,6 @@ export function buildVariantItem(spec: VariantSpec, content: string): RegistryIt
     type: "registry:ui",
     description: `Variant component: ${spec.name}`,
     registryDependencies: [],
-    cssVars: { theme: {} },
-    css: {},
     files: [
       {
         path: `components/ui/${spec.name}.tsx`,
@@ -72,10 +87,6 @@ export function buildVariantItem(spec: VariantSpec, content: string): RegistryIt
     ],
     dependencies: spec.npmDeps,
   };
-}
-
-function loadThemeCss(id: string): string {
-  return readFileSync(resolve(PROJECT_ROOT, `registry/themes/${id}/theme.css`), "utf-8");
 }
 
 export function validateRegistryDependencies(
@@ -100,8 +111,7 @@ export function build(): void {
   validateRegistryDependencies(allThemes, variantNames);
 
   for (const theme of allThemes) {
-    const css = loadThemeCss(theme.id);
-    const item = buildRegistryItem(theme, css);
+    const item = buildRegistryItem(theme);
     writeFileSync(resolve(OUT_DIR, `${item.name}.json`), JSON.stringify(item, null, 2));
     console.log(`wrote theme-${theme.id}.json`);
   }

@@ -1,35 +1,40 @@
 import { describe, it, expect } from "vitest";
 import { buildRegistryItem, validateRegistryDependencies } from "@/scripts/build-registry";
 import { editorial } from "@/registry/themes/editorial/meta";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 
 describe("registry build", () => {
-  it("produces a valid registry-item JSON for editorial theme", () => {
-    const cssContent = readFileSync(
-      resolve(__dirname, "../registry/themes/editorial/theme.css"),
-      "utf-8"
-    );
-    const item = buildRegistryItem(editorial, cssContent);
+  it("emits [data-theme] selectors with token declarations", () => {
+    const item = buildRegistryItem(editorial);
+    const lightSel = '[data-theme="editorial"]';
+    const darkSel = '[data-theme="editorial"][data-mode="dark"]';
 
     expect(item.name).toBe("theme-editorial");
     expect(item.type).toBe("registry:theme");
     expect(item.description).toBe(editorial.description);
-    expect(item.cssVars).toBeDefined();
-    expect(item.cssVars.theme["editorial-light"]).toBeDefined();
+
     expect(item.css).toBeDefined();
-    expect(item.css["[data-theme=\"editorial\"]"]).toBeUndefined(); // raw css under .css key
-    expect(typeof item.css).toBe("object");
+    expect(item.css?.[lightSel]).toBeDefined();
+    expect(item.css?.[lightSel]?.["--background"]).toBe("oklch(0.98 0.012 80)");
+    expect(item.css?.[lightSel]?.["--font-display"]).toContain("source-serif");
+
+    expect(item.css?.[darkSel]).toBeDefined();
+    expect(item.css?.[darkSel]?.["--background"]).toBe("oklch(0.18 0.015 50)");
   });
 
   it("includes registryDependencies as URLs when provided", () => {
-    const item = buildRegistryItem(
-      { ...editorial, registryDependencies: ["card-elegant"] },
-      ""
-    );
+    const item = buildRegistryItem({
+      ...editorial,
+      registryDependencies: ["card-elegant"],
+    });
     expect(item.registryDependencies).toEqual([
       "https://solution-themes.vercel.app/r/card-elegant.json",
     ]);
+  });
+
+  it("emits cssVars.theme extension mappings for success/warning", () => {
+    const item = buildRegistryItem(editorial);
+    expect(item.cssVars?.theme?.["color-success"]).toBe("var(--success)");
+    expect(item.cssVars?.theme?.["color-warning"]).toBe("var(--warning)");
   });
 });
 
