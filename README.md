@@ -124,24 +124,6 @@ Custom variants (this theme):
 Dark mode: toggle `[data-mode="dark"]` on `<html>`.
 ````
 
-### Known limitation (v1)
-
-The current registry JSON uses a non-standard `css.__raw` field for `[data-theme="X"]`-scoped CSS. Variant components and basic `cssVars` install cleanly, but the theme activation CSS may not be auto-injected by the shadcn CLI. Workaround until v2 ships the standard schema:
-
-```bash
-# Manually fetch the theme.css for the theme you want
-curl -o app/styles/theme-data-terminal.css \
-  https://raw.githubusercontent.com/jihodaddy/solution-themes/main/registry/themes/data-terminal/theme.css
-```
-
-Then in `app/globals.css`:
-
-```css
-@import "../styles/theme-data-terminal.css";
-```
-
-This v2 migration is tracked at the bottom of this README.
-
 ---
 
 ## Local development (this repo)
@@ -170,6 +152,10 @@ See `DESIGN.md` for design principles and how to add a new theme.
 
 ## Roadmap
 
-### v2 — Standard shadcn registry schema
+### v2.1 — Single-source token CSS generation
 
-Migrate `css.__raw` to the canonical `Record<selector, declarations>` shape so `npx shadcn add` auto-injects `[data-theme="X"]` CSS without the manual workaround. Tracked in `scripts/build-registry.ts`.
+Currently `tokens.ts` and `theme.css` duplicate token values (TS for runtime, CSS for showcase). Generate `theme.css` from `tokens.ts` at build time so `tokens.ts` becomes the only authored source.
+
+### v2.2 — Theme builder UI
+
+Sliders for live token tweaking, exporting back to `tokens.ts`.
