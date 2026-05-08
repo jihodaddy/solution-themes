@@ -46,8 +46,25 @@ function loadThemeCss(id: string): string {
   return readFileSync(resolve(PROJECT_ROOT, `registry/themes/${id}/theme.css`), "utf-8");
 }
 
+export function validateRegistryDependencies(
+  themes: ThemeMeta[],
+  availableVariants: string[]
+): void {
+  const known = new Set(availableVariants);
+  for (const theme of themes) {
+    for (const dep of theme.registryDependencies) {
+      if (!known.has(dep)) {
+        throw new Error(
+          `theme '${theme.id}' depends on '${dep}' but that variant is not registered`
+        );
+      }
+    }
+  }
+}
+
 export function build(): void {
   mkdirSync(OUT_DIR, { recursive: true });
+  validateRegistryDependencies(allThemes, []);
   for (const theme of allThemes) {
     const css = loadThemeCss(theme.id);
     const item = buildRegistryItem(theme, css);

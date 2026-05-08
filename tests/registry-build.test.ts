@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildRegistryItem } from "@/scripts/build-registry";
+import { buildRegistryItem, validateRegistryDependencies } from "@/scripts/build-registry";
 import { editorial } from "@/registry/themes/editorial/meta";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -30,5 +30,22 @@ describe("registry build", () => {
     expect(item.registryDependencies).toEqual([
       "https://solution-themes.vercel.app/r/card-elegant.json",
     ]);
+  });
+});
+
+describe("registry dependency validation", () => {
+  it("throws when a theme references a non-existent variant", () => {
+    expect(() =>
+      validateRegistryDependencies([{ ...editorial, registryDependencies: ["does-not-exist"] }], [])
+    ).toThrow(/does-not-exist/);
+  });
+
+  it("passes when all referenced variants exist", () => {
+    expect(() =>
+      validateRegistryDependencies(
+        [{ ...editorial, registryDependencies: ["card-elegant"] }],
+        ["card-elegant"]
+      )
+    ).not.toThrow();
   });
 });
