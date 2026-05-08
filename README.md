@@ -15,6 +15,60 @@ Each theme ships in light + dark, with theme-specific variant components where t
 
 ---
 
+## Quick start (vibe coding)
+
+3 lines, ~2 minutes from blank slate to a styled app:
+
+```bash
+pnpm create next-app@latest my-project --typescript --tailwind --app && cd my-project
+pnpm dlx shadcn@latest init -d
+npx shadcn@latest add https://solution-themes.vercel.app/r/theme-data-terminal.json --yes
+```
+
+Then in `app/layout.tsx`:
+
+```tsx
+<html lang="ko" data-theme="data-terminal" data-mode="light">
+  <body>{children}</body>
+</html>
+```
+
+Done. Use any token utility immediately: `bg-background`, `text-foreground`, `bg-primary`, `bg-success`, `font-display`, etc.
+
+### Pick a different theme
+
+Swap the URL in the install command. The `data-theme` attribute name matches the theme ID:
+
+| Theme | Install URL | `data-theme` |
+|---|---|---|
+| Warm Editorial | `.../r/theme-editorial.json` | `editorial` |
+| Nordic Calm | `.../r/theme-nordic.json` | `nordic` |
+| Data Terminal | `.../r/theme-data-terminal.json` | `data-terminal` |
+| Productivity Pro | `.../r/theme-productivity.json` | `productivity` |
+
+### Add a system-preference dark toggle (optional, ~30 sec)
+
+Drop this into `<head>` of `app/layout.tsx` to honor the user's OS dark setting before React hydrates:
+
+```tsx
+<head>
+  <script dangerouslySetInnerHTML={{ __html: `
+    (function () {
+      var m = localStorage.getItem("mode") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-mode", m);
+    })();
+  ` }} />
+</head>
+```
+
+### Make your AI agent theme-aware
+
+If you use Claude Code, Cursor, Codex, or any coding agent: paste the block from [§5 Helping AI coding tools use the tokens](#5-helping-ai-coding-tools-use-the-tokens) into your project's `CLAUDE.md` / `.cursorrules` / `AGENTS.md`. The agent will then use semantic tokens (`bg-success`, `font-display`) instead of hardcoded hex colors.
+
+For deeper integration (toggle UI, multi-theme switching, per-route theming), see the detailed sections below.
+
+---
+
 ## Using a theme in another project
 
 > Replace `https://solution-themes.vercel.app` with the actual deploy URL of this registry.
