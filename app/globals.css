@@ -128,3 +128,8 @@
     @apply font-sans;
   }
 }
+
+@import "../registry/themes/editorial/theme.css";
+@import "../registry/themes/nordic/theme.css";
+@import "../registry/themes/data-terminal/theme.css";
+@import "../registry/themes/productivity/theme.css";
