@@ -10,6 +10,6 @@ export const dataTerminal: ThemeMeta = {
     { family: "Inter", subsets: ["latin"], variable: "--font-inter" },
     { family: "JetBrains_Mono", subsets: ["latin"], variable: "--font-jetbrains-mono" },
   ],
-  registryDependencies: [],
+  registryDependencies: ["table-compact", "stat-card-directional"],
   tokens: { light: dataTerminalLight, dark: dataTerminalDark },
 };

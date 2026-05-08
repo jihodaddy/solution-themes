@@ -10,6 +10,6 @@ export const editorial: ThemeMeta = {
     { family: "Inter", subsets: ["latin"], variable: "--font-inter" },
     { family: "Source_Serif_4", subsets: ["latin"], variable: "--font-source-serif" },
   ],
-  registryDependencies: [],
+  registryDependencies: ["card-elegant"],
   tokens: { light: editorialLight, dark: editorialDark },
 };

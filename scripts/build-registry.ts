@@ -9,6 +9,16 @@ const PROJECT_ROOT = resolve(__dirname, "..");
 const OUT_DIR = resolve(PROJECT_ROOT, "public/r");
 const REGISTRY_BASE_URL = "https://solution-themes.vercel.app/r";
 
+type VariantSpec = { name: string; sourcePath: string; npmDeps: string[] };
+
+const VARIANTS: VariantSpec[] = [
+  { name: "card-elegant", sourcePath: "registry/components/card-elegant.tsx", npmDeps: [] },
+  { name: "badge-pill", sourcePath: "registry/components/badge-pill.tsx", npmDeps: ["class-variance-authority"] },
+  { name: "status-dot", sourcePath: "registry/components/status-dot.tsx", npmDeps: ["class-variance-authority"] },
+  { name: "stat-card-directional", sourcePath: "registry/components/stat-card-directional.tsx", npmDeps: [] },
+  { name: "table-compact", sourcePath: "registry/components/table-compact.tsx", npmDeps: [] },
+];
+
 export type RegistryItem = {
   $schema?: string;
   name: string;
@@ -16,7 +26,9 @@ export type RegistryItem = {
   description: string;
   registryDependencies: string[];
   cssVars: { theme: Record<string, Record<string, string>> };
-  css: Record<string, Record<string, string>>;
+  css: Record<string, unknown>;
+  files?: { path: string; content: string; type: "registry:ui" }[];
+  dependencies?: string[];
 };
 
 function tokensToCssVars(tokens: ThemeTokens): Record<string, string> {
@@ -42,6 +54,26 @@ export function buildRegistryItem(meta: ThemeMeta, rawCss: string): RegistryItem
   };
 }
 
+export function buildVariantItem(spec: VariantSpec, content: string): RegistryItem {
+  return {
+    $schema: "https://ui.shadcn.com/schema/registry-item.json",
+    name: spec.name,
+    type: "registry:ui",
+    description: `Variant component: ${spec.name}`,
+    registryDependencies: [],
+    cssVars: { theme: {} },
+    css: {},
+    files: [
+      {
+        path: `components/ui/${spec.name}.tsx`,
+        content,
+        type: "registry:ui",
+      },
+    ],
+    dependencies: spec.npmDeps,
+  };
+}
+
 function loadThemeCss(id: string): string {
   return readFileSync(resolve(PROJECT_ROOT, `registry/themes/${id}/theme.css`), "utf-8");
 }
@@ -64,13 +96,21 @@ export function validateRegistryDependencies(
 
 export function build(): void {
   mkdirSync(OUT_DIR, { recursive: true });
-  validateRegistryDependencies(allThemes, []);
+  const variantNames = VARIANTS.map((v) => v.name);
+  validateRegistryDependencies(allThemes, variantNames);
+
   for (const theme of allThemes) {
     const css = loadThemeCss(theme.id);
     const item = buildRegistryItem(theme, css);
-    const outPath = resolve(OUT_DIR, `${item.name}.json`);
-    writeFileSync(outPath, JSON.stringify(item, null, 2));
-    console.log(`wrote ${outPath}`);
+    writeFileSync(resolve(OUT_DIR, `${item.name}.json`), JSON.stringify(item, null, 2));
+    console.log(`wrote theme-${theme.id}.json`);
+  }
+
+  for (const variant of VARIANTS) {
+    const content = readFileSync(resolve(PROJECT_ROOT, variant.sourcePath), "utf-8");
+    const item = buildVariantItem(variant, content);
+    writeFileSync(resolve(OUT_DIR, `${variant.name}.json`), JSON.stringify(item, null, 2));
+    console.log(`wrote ${variant.name}.json`);
   }
 }
 

@@ -7,6 +7,6 @@ export const productivity: ThemeMeta = {
   description: "Modern white surface with colored pill tags for SaaS internal tools and task management.",
   intendedContexts: ["Kanban boards", "Task lists", "Internal SaaS tools"],
   fonts: [{ family: "Inter", subsets: ["latin"], variable: "--font-inter" }],
-  registryDependencies: [],
+  registryDependencies: ["badge-pill", "status-dot"],
   tokens: { light: productivityLight, dark: productivityDark },
 };
