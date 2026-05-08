@@ -1,16 +1,23 @@
+import fs from "node:fs";
+import path from "node:path";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { allThemes } from "@/lib/themes";
 import { SEMANTIC_TOKEN_KEYS } from "@/registry/types";
 
+function loadDesignMd(): string {
+  const filePath = path.resolve(process.cwd(), "DESIGN.md");
+  return fs.readFileSync(filePath, "utf-8");
+}
+
 export default function DesignPage() {
+  const designMd = loadDesignMd();
+
   return (
     <main className="px-6 py-12 max-w-6xl mx-auto space-y-12">
-      <header className="space-y-2">
-        <h1 className="text-4xl font-semibold tracking-tight">Design system</h1>
-        <p className="text-muted-foreground max-w-2xl">
-          Token values are read directly from <code className="font-mono text-sm">registry/themes/*/meta.ts</code>.
-          See <code className="font-mono text-sm">DESIGN.md</code> for principles and rationale.
-        </p>
-      </header>
+      <article className="max-w-none [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:tracking-tight [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:mt-6 [&_h3]:mb-2 [&_p]:my-3 [&_p]:leading-7 [&_ul]:my-3 [&_ul]:pl-5 [&_ul]:list-disc [&_ol]:my-3 [&_ol]:pl-5 [&_ol]:list-decimal [&_li]:my-1 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_code]:font-mono [&_pre]:bg-muted [&_pre]:p-3 [&_pre]:rounded-md [&_pre]:overflow-x-auto [&_pre>code]:bg-transparent [&_pre>code]:p-0 [&_strong]:font-semibold [&_table]:my-4 [&_table]:w-full [&_table]:text-sm [&_th]:text-left [&_th]:p-2 [&_th]:border-b [&_th]:border-border [&_th]:font-medium [&_td]:p-2 [&_td]:border-b [&_td]:border-border">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{designMd}</ReactMarkdown>
+      </article>
 
       <section>
         <h2 className="text-2xl font-semibold mb-4">Color swatches</h2>
