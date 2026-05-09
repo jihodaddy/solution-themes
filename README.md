@@ -46,26 +46,36 @@ Swap the URL in the install command. The `data-theme` attribute name matches the
 | Data Terminal | `.../r/theme-data-terminal.json` | `data-terminal` |
 | Productivity Pro | `.../r/theme-productivity.json` | `productivity` |
 
-### Add a system-preference dark toggle (optional, ~30 sec)
+### Drop in a ready-made theme switcher (1 line + 1 component)
 
-Drop this into `<head>` of `app/layout.tsx` to honor the user's OS dark setting before React hydrates:
+Install the bundled `<ThemeSwitcher />` and you get a Select dropdown for themes, a Sun/Moon button for mode, localStorage persistence, and FOUC-safe initial paint — all in one go:
+
+```bash
+npx shadcn@latest add https://solution-themes.vercel.app/r/theme-switcher.json --yes
+```
 
 ```tsx
-<head>
-  <script dangerouslySetInnerHTML={{ __html: `
-    (function () {
-      var m = localStorage.getItem("mode") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-      document.documentElement.setAttribute("data-mode", m);
-    })();
-  ` }} />
-</head>
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
+
+export default function Header() {
+  return (
+    <header className="...">
+      {/* ...your nav... */}
+      <ThemeSwitcher />
+    </header>
+  );
+}
 ```
+
+That's it. Users can now switch between all 4 themes and toggle dark mode from the UI.
+
+> Want only system-preference dark mode (no UI)? See the [advanced section](#3-add-a-theme-switcher) below for the inline-script approach.
 
 ### Make your AI agent theme-aware
 
-If you use Claude Code, Cursor, Codex, or any coding agent: paste the block from [§5 Helping AI coding tools use the tokens](#5-helping-ai-coding-tools-use-the-tokens) into your project's `CLAUDE.md` / `.cursorrules` / `AGENTS.md`. The agent will then use semantic tokens (`bg-success`, `font-display`) instead of hardcoded hex colors.
+Every theme detail page on the showcase site has a **"Code snippets" tab → "AI agent context"** that produces a markdown block tailored for that exact theme (right ID, right variants list). Copy → paste into your `CLAUDE.md` / `.cursorrules` / `AGENTS.md`. The agent will then use semantic tokens (`bg-success`, `font-display`) instead of hardcoded hex colors.
 
-For deeper integration (toggle UI, multi-theme switching, per-route theming), see the detailed sections below.
+For deeper integration (per-route theming, custom switchers, build pipelines), see the detailed sections below.
 
 ---
 
@@ -101,9 +111,9 @@ npx shadcn@latest add https://solution-themes.vercel.app/r/theme-productivity.js
 ```
 
 This installs:
-- CSS variables (light + dark) into `app/globals.css`
+- CSS variables (light + dark) into `app/globals.css` — both `[data-theme="X"]` selectors and matching `@theme inline` mappings
 - Variant components into `components/ui/` (e.g., Data Terminal pulls in `table-compact.tsx` and `stat-card-directional.tsx`)
-- Required npm dependencies (e.g., `class-variance-authority`)
+- Required npm dependencies (e.g., `class-variance-authority`, `lucide-react`)
 
 ### 2. Apply the theme
 
@@ -117,15 +127,31 @@ In your `app/layout.tsx`:
 
 The `data-theme` attribute selects which token set is active. The `data-mode` attribute toggles between light and dark. **Switching is pure CSS** — no React re-render of styles.
 
-### 3. (Optional) Light/dark toggle with no FOUC
+### 3. Add a theme switcher
 
-Add a small inline script to `<head>` so the right mode is set before React hydrates:
+**Option A — Use the bundled `<ThemeSwitcher />` (recommended)**
+
+```bash
+npx shadcn@latest add https://solution-themes.vercel.app/r/theme-switcher.json --yes
+```
+
+```tsx
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
+
+<ThemeSwitcher />
+```
+
+The component is installed as source (`components/ui/theme-switcher.tsx`) — edit it freely if you want different theme names, fewer themes, or a different look. By default: Select dropdown for theme + icon button for mode, persists to `localStorage` (`st-theme`, `st-mode`).
+
+**Option B — Manual inline switching (advanced)**
+
+If you want only system-preference dark mode (no interactive UI), or you're building your own switcher, add this small inline script to `<head>` to set the right mode before React hydrates:
 
 ```tsx
 <head>
   <script dangerouslySetInnerHTML={{ __html: `
     (function () {
-      var m = localStorage.getItem("mode") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      var m = localStorage.getItem("st-mode") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
       document.documentElement.setAttribute("data-mode", m);
     })();
   ` }} />
@@ -137,7 +163,7 @@ Toggle from anywhere:
 ```ts
 const next = document.documentElement.getAttribute("data-mode") === "dark" ? "light" : "dark";
 document.documentElement.setAttribute("data-mode", next);
-localStorage.setItem("mode", next);
+localStorage.setItem("st-mode", next);
 ```
 
 ### 4. Just want a single variant? (no theme tokens)
@@ -152,15 +178,27 @@ import { BadgePill } from "@/components/ui/badge-pill";
 <BadgePill tone="success">완료</BadgePill>
 ```
 
-Available standalone variants: `card-elegant`, `badge-pill`, `status-dot`, `stat-card-directional`, `table-compact`.
+Available standalone variants:
+
+| Variant | Purpose |
+|---|---|
+| `card-elegant` | Card with serif italic caption — magazine/editorial feel |
+| `badge-pill` | Rounded-full badge with `neutral`/`primary`/`success`/`warning`/`destructive` tones |
+| `status-dot` | Small colored dot for status indicators (3 sizes × 5 tones) |
+| `stat-card-directional` | KPI card with ▲/▼ delta indicator and tabular numerics |
+| `table-compact` | Dense table with monospace numerics column support |
+| `theme-switcher` | Self-contained theme + mode switcher with persistence |
 
 ### 5. Helping AI coding tools use the tokens
 
-Drop a short note into your project's `CLAUDE.md` / `.cursorrules` / agent instructions so the AI uses semantic tokens instead of hardcoded colors:
+The fastest path: visit any theme's detail page on the showcase site (e.g. `/themes/data-terminal`), open the "Code snippets" panel, switch to the "AI agent context" tab, click Copy. You get a markdown block tailored for that theme.
+
+Manually, the block looks like this — adapt the theme ID and variant list:
 
 ````markdown
 ## Theme System
-This project uses solution-themes (Data Terminal preset).
+
+This project uses solution-themes (`data-terminal` preset — Data Terminal).
 Active theme: applied via `[data-theme="data-terminal"]` on `<html>`.
 
 Tokens available (use these, never hardcode colors):
@@ -171,9 +209,9 @@ Tokens available (use these, never hardcode colors):
 - Borders: `border-border`, `border-input`
 - Typography: `font-sans`, `font-serif`, `font-mono`, `font-display`, `font-numeric`
 
-Custom variants (this theme):
-- `TableCompact` (components/ui/table-compact.tsx) — dense rows + tabular-nums
-- `StatCardDirectional` (components/ui/stat-card-directional.tsx) — ▲/▼ delta indicator
+Custom variants installed with this theme:
+- `table-compact` (components/ui/table-compact.tsx)
+- `stat-card-directional` (components/ui/stat-card-directional.tsx)
 
 Dark mode: toggle `[data-mode="dark"]` on `<html>`.
 ````
@@ -186,30 +224,54 @@ Dark mode: toggle `[data-mode="dark"]` on `<html>`.
 pnpm install
 pnpm dev              # http://localhost:3000
 pnpm test             # vitest — token completeness + registry build validation
-pnpm build            # production build (also rebuilds registry JSON via prebuild hook)
-pnpm build:registry   # rebuild registry JSON only → public/r/*.json
+pnpm build            # production build (also rebuilds registry JSON + showcase CSS via prebuild hook)
+pnpm build:registry   # rebuild registry JSON + showcase CSS only
 ```
 
 ## Project layout
 
-- `registry/` — single source of truth (themes + variant components)
-  - `themes/<id>/{tokens.ts, meta.ts, theme.css}` — one folder per theme
-  - `components/<variant>.tsx` — variant components (5)
-- `scripts/build-registry.ts` — TS → JSON pipeline (emits `public/r/*.json`)
+- `registry/` — single source of truth
+  - `themes/<id>/{tokens.ts, meta.ts}` — token values + metadata per theme. **No hand-authored CSS** — `theme.css` is generated.
+  - `components/<variant>.tsx` — variant components (6)
+- `scripts/build-registry.ts` — TS → JSON + CSS pipeline. Emits both:
+  - `public/r/*.json` — registry items consumed by `npx shadcn add`
+  - `app/styles/themes-generated/<id>.css` — `[data-theme="X"]` rules consumed by the showcase site (gitignored, regenerated on every build)
 - `app/` — showcase site (landing, theme detail, playground, design page)
 - `DESIGN.md` — design rationale and contribution guide
-- `tests/` — vitest mechanical checks
+- `tests/` — vitest mechanical checks (token completeness, registry build validation)
 
-See `DESIGN.md` for design principles and how to add a new theme.
+### Adding a new theme
+
+1. `registry/themes/<id>/tokens.ts` — define `ThemeTokens` for light + dark
+2. `registry/themes/<id>/meta.ts` — `ThemeMeta` (id, name, description, fonts, registryDependencies, tokens)
+3. Add the new theme to `lib/themes.ts` (import + push into `allThemes`)
+4. Update `app/themes/[id]/page.tsx` `SCENES_BY_THEME` mapping with relevant scenes
+5. Update `registry/components/theme-switcher.tsx` `THEMES` array if you want it in the bundled switcher
+6. `pnpm test && pnpm build:registry` — token completeness test + registry validation should pass
+
+The build pipeline auto-generates `app/styles/themes-generated/<id>.css` and `public/r/theme-<id>.json`. The `/design` page picks up the new theme automatically.
+
+See `DESIGN.md` for the full design rationale.
 
 ---
 
 ## Roadmap
 
-### v2.1 — Single-source token CSS generation
+### Shipped
 
-Currently `tokens.ts` and `theme.css` duplicate token values (TS for runtime, CSS for showcase). Generate `theme.css` from `tokens.ts` at build time so `tokens.ts` becomes the only authored source.
+- ✅ **v1** — 4 themes, 5 variants, 4 demo scenes, showcase site, registry build pipeline
+- ✅ **v2** — Standard shadcn registry schema (`css.[selector]` instead of `css.__raw`)
+- ✅ **v2.1** — Single-source token CSS generation (`tokens.ts` only; `theme.css` deleted)
+- ✅ **v2.2** — `<ThemeSwitcher />` as 6th registry variant
+- ✅ **v2.3** — Settings demo scene (forms: Input, Select, Checkbox, Radio, Switch, Textarea)
+- ✅ **v2.4** — Code snippet panel on theme detail pages (4 tabs, copy-to-clipboard)
 
-### v2.2 — Theme builder UI
+### Possible next moves
 
-Sliders for live token tweaking, exporting back to `tokens.ts`.
+- **v3 — More themes** — Brutalist, Cyberpunk Neon, Soft Pastel (originally explored, intentionally deferred)
+- **v3 — Theme builder UI** — sliders for live token tweaking, export back to `tokens.ts`
+- **v3 — Real chart library** — Recharts integration for dashboard demo with actual data viz
+- **v3 — Mobile responsive** — sidebar collapsing drawer for scenes
+- **v3 — Visual regression CI** — Playwright snapshot tests across theme × scene × mode
+- **v3 — Token diff viewer** — pick two themes on the design page, see token-by-token differences
+- **v3 — MCP server** — expose registry as an MCP tool so Claude Desktop / Code agents can install + preview themes natively
