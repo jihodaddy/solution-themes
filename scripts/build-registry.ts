@@ -18,6 +18,7 @@ const VARIANTS: VariantSpec[] = [
   { name: "status-dot", sourcePath: "registry/components/status-dot.tsx", npmDeps: ["class-variance-authority"] },
   { name: "stat-card-directional", sourcePath: "registry/components/stat-card-directional.tsx", npmDeps: [] },
   { name: "table-compact", sourcePath: "registry/components/table-compact.tsx", npmDeps: [] },
+  { name: "theme-switcher", sourcePath: "registry/components/theme-switcher.tsx", npmDeps: ["lucide-react"] },
 ];
 
 export type RegistryItem = {

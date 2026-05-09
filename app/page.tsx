@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { allThemes } from "@/lib/themes";
+import { ThemeSwitcher } from "@/registry/components/theme-switcher";
 
 export default function HomePage() {
   return (
@@ -23,6 +24,10 @@ export default function HomePage() {
           >
             Design system docs
           </Link>
+          <div className="flex items-center gap-2 border-l border-border pl-3 ml-auto">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">Try it</span>
+            <ThemeSwitcher />
+          </div>
         </div>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
