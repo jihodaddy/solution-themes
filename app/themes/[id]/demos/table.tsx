@@ -207,19 +207,19 @@ export function TableScene() {
                         header: "Amount",
                         align: "right",
                         numeric: true,
-                        render: (r) => `₩ ${(r as unknown as OrderRow).amount.toLocaleString()}`,
+                        render: (r) => `₩ ${r.amount.toLocaleString()}`,
                       },
                       {
                         key: "status",
                         header: "Status",
                         render: (r) => (
-                          <BadgePill tone={TONE_BY_STATUS[(r as unknown as OrderRow).status]}>
-                            {(r as unknown as OrderRow).status}
+                          <BadgePill tone={TONE_BY_STATUS[r.status]}>
+                            {r.status}
                           </BadgePill>
                         ),
                       },
                     ]}
-                    data={ORDERS as unknown as Record<string, React.ReactNode>[]}
+                    data={ORDERS}
                   />
                 </div>
 
@@ -283,17 +283,17 @@ export function TableScene() {
                                 header: "Unit",
                                 align: "right",
                                 numeric: true,
-                                render: (r) => `₩ ${(r as unknown as LineItem).unitPrice.toLocaleString()}`,
+                                render: (r) => `₩ ${r.unitPrice.toLocaleString()}`,
                               },
                               {
                                 key: "lineTotal",
                                 header: "Total",
                                 align: "right",
                                 numeric: true,
-                                render: (r) => `₩ ${(r as unknown as LineItem).lineTotal.toLocaleString()}`,
+                                render: (r) => `₩ ${r.lineTotal.toLocaleString()}`,
                               },
                             ]}
-                            data={LINE_ITEMS as unknown as Record<string, React.ReactNode>[]}
+                            data={LINE_ITEMS}
                           />
                         </div>
                         {/* Totals footer */}

@@ -15,7 +15,7 @@ export type TableCompactProps<T> = {
   className?: string;
 };
 
-export function TableCompact<T extends Record<string, React.ReactNode>>({
+export function TableCompact<T extends Record<string, unknown>>({
   columns,
   data,
   className,
@@ -50,7 +50,7 @@ export function TableCompact<T extends Record<string, React.ReactNode>>({
                 )}
                 style={c.numeric ? { fontFamily: "var(--font-numeric)" } : undefined}
               >
-                {c.render ? c.render(row) : row[c.key]}
+                {c.render ? c.render(row) : (row[c.key] as React.ReactNode)}
               </td>
             ))}
           </tr>
