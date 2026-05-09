@@ -133,7 +133,7 @@
   }
 }
 
-@import "../registry/themes/editorial/theme.css";
-@import "../registry/themes/nordic/theme.css";
-@import "../registry/themes/data-terminal/theme.css";
-@import "../registry/themes/productivity/theme.css";
+@import "./styles/themes-generated/editorial.css";
+@import "./styles/themes-generated/nordic.css";
+@import "./styles/themes-generated/data-terminal.css";
+@import "./styles/themes-generated/productivity.css";

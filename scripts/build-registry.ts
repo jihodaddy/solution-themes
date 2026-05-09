@@ -7,6 +7,7 @@ import { allThemes } from "@/lib/themes";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, "..");
 const OUT_DIR = resolve(PROJECT_ROOT, "public/r");
+const SHOWCASE_CSS_DIR = resolve(PROJECT_ROOT, "app/styles/themes-generated");
 const REGISTRY_BASE_URL = "https://solution-themes.vercel.app/r";
 
 type VariantSpec = { name: string; sourcePath: string; npmDeps: string[] };
@@ -49,6 +50,23 @@ function tokensToCssDecls(tokens: ThemeTokens): Record<string, string> {
     out[`--${key}`] = value;
   }
   return out;
+}
+
+function tokensToCssBlock(selector: string, tokens: ThemeTokens): string {
+  const lines = Object.entries(tokens).map(([key, value]) => `  --${key}: ${value};`);
+  return `${selector} {\n${lines.join("\n")}\n}\n`;
+}
+
+function emitShowcaseCss(meta: ThemeMeta, outDir: string): void {
+  const lightSel = `[data-theme="${meta.id}"]`;
+  const darkSel = `[data-theme="${meta.id}"][data-mode="dark"]`;
+  const css =
+    tokensToCssBlock(lightSel, meta.tokens.light) +
+    "\n" +
+    tokensToCssBlock(darkSel, meta.tokens.dark);
+  const outPath = resolve(outDir, `${meta.id}.css`);
+  writeFileSync(outPath, css);
+  console.log(`wrote styles/${meta.id}.css`);
 }
 
 export function buildRegistryItem(meta: ThemeMeta): RegistryItem {
@@ -107,6 +125,7 @@ export function validateRegistryDependencies(
 
 export function build(): void {
   mkdirSync(OUT_DIR, { recursive: true });
+  mkdirSync(SHOWCASE_CSS_DIR, { recursive: true });
   const variantNames = VARIANTS.map((v) => v.name);
   validateRegistryDependencies(allThemes, variantNames);
 
@@ -114,6 +133,7 @@ export function build(): void {
     const item = buildRegistryItem(theme);
     writeFileSync(resolve(OUT_DIR, `${item.name}.json`), JSON.stringify(item, null, 2));
     console.log(`wrote theme-${theme.id}.json`);
+    emitShowcaseCss(theme, SHOWCASE_CSS_DIR);
   }
 
   for (const variant of VARIANTS) {
