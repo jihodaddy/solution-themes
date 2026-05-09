@@ -5,13 +5,14 @@ import { ArticleScene } from "./demos/article";
 import { DashboardScene } from "./demos/dashboard";
 import { TableScene } from "./demos/table";
 import { TasksScene } from "./demos/tasks";
+import { SettingsScene } from "./demos/settings";
 import { ThemeApplicator } from "./theme-applicator";
 
 const SCENES_BY_THEME: Record<ThemeId, React.FC[]> = {
   editorial: [ArticleScene, DashboardScene],
-  nordic: [DashboardScene, ArticleScene],
+  nordic: [DashboardScene, ArticleScene, SettingsScene],
   "data-terminal": [TableScene, DashboardScene],
-  productivity: [TasksScene, TableScene],
+  productivity: [TasksScene, TableScene, SettingsScene],
 };
 
 export function generateStaticParams() {

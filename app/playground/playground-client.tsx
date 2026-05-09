@@ -8,13 +8,15 @@ import { ArticleScene } from "../themes/[id]/demos/article";
 import { DashboardScene } from "../themes/[id]/demos/dashboard";
 import { TableScene } from "../themes/[id]/demos/table";
 import { TasksScene } from "../themes/[id]/demos/tasks";
+import { SettingsScene } from "../themes/[id]/demos/settings";
 
-type SceneId = "article" | "dashboard" | "table" | "tasks";
+type SceneId = "article" | "dashboard" | "table" | "tasks" | "settings";
 const SCENES: Record<SceneId, React.FC> = {
   article: ArticleScene,
   dashboard: DashboardScene,
   table: TableScene,
   tasks: TasksScene,
+  settings: SettingsScene,
 };
 
 export function PlaygroundClient() {
