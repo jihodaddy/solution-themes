@@ -6,6 +6,13 @@ import { DashboardScene } from "./demos/dashboard";
 import { TableScene } from "./demos/table";
 import { TasksScene } from "./demos/tasks";
 import { SettingsScene } from "./demos/settings";
+import { LogisticsScene } from "./demos/logistics";
+import { ProcessFormScene } from "./demos/process-form";
+import { SearchBoardScene } from "./demos/search-board";
+import { PipelineScene } from "./demos/pipeline";
+import { AuthScene } from "./demos/auth";
+import { PricingScene } from "./demos/pricing";
+import { EmptyStatesScene } from "./demos/empty-states";
 import { ThemeApplicator } from "./theme-applicator";
 import { CodeSnippets, type CodeSnippet } from "./code-snippets";
 
@@ -62,10 +69,11 @@ Dark mode: toggle \`[data-mode="dark"]\` on \`<html>\`.`;
 }
 
 const SCENES_BY_THEME: Record<ThemeId, React.FC[]> = {
-  editorial: [ArticleScene, DashboardScene],
-  nordic: [DashboardScene, ArticleScene, SettingsScene],
-  "data-terminal": [TableScene, DashboardScene],
-  productivity: [TasksScene, TableScene, SettingsScene],
+  editorial: [ArticleScene, PricingScene, DashboardScene],
+  nordic: [DashboardScene, ProcessFormScene, ArticleScene, SettingsScene],
+  "data-terminal": [LogisticsScene, TableScene, DashboardScene, EmptyStatesScene],
+  productivity: [TasksScene, SearchBoardScene, TableScene, SettingsScene],
+  atlas: [PipelineScene, AuthScene, PricingScene, ProcessFormScene, SearchBoardScene, EmptyStatesScene],
 };
 
 export function generateStaticParams() {
