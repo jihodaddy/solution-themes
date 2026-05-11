@@ -8,10 +8,10 @@ export default function HomePage() {
       <header className="space-y-4 mb-16">
         <h1 className="text-5xl font-semibold tracking-tight">solution-themes</h1>
         <p className="text-lg text-muted-foreground max-w-2xl">
-          4 distinct shadcn-compatible themes for different contexts. Install any of them with a single
-          shadcn CLI command.
+          {allThemes.length} distinct shadcn-compatible themes for different contexts. Install any of
+          them with a single shadcn CLI command.
         </p>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <Link
             href="/playground"
             className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium"
@@ -19,10 +19,22 @@ export default function HomePage() {
             Try the playground →
           </Link>
           <Link
+            href="/compare"
+            className="inline-flex items-center px-4 py-2 border border-border rounded-md text-sm font-medium hover:bg-muted"
+          >
+            Compare themes
+          </Link>
+          <Link
             href="/design"
-            className="inline-flex items-center px-4 py-2 border border-border rounded-md text-sm font-medium"
+            className="inline-flex items-center px-4 py-2 border border-border rounded-md text-sm font-medium hover:bg-muted"
           >
             Design system docs
+          </Link>
+          <Link
+            href="/agents-md"
+            className="inline-flex items-center px-4 py-2 border border-border rounded-md text-sm font-medium hover:bg-muted"
+          >
+            AI agent rules
           </Link>
           <div className="flex items-center gap-2 border-l border-border pl-3 ml-auto">
             <span className="text-xs uppercase tracking-wider text-muted-foreground">Try it</span>
