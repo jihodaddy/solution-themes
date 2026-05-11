@@ -7,6 +7,6 @@ export const nordic: ThemeMeta = {
   description: "Muted blue-grey palette with generous whitespace for analytics and calm productivity tools.",
   intendedContexts: ["Analytics dashboard", "Settings", "Calm productivity tools"],
   fonts: [{ family: "Inter", subsets: ["latin"], variable: "--font-inter" }],
-  registryDependencies: [],
+  registryDependencies: ["step-indicator"],
   tokens: { light: nordicLight, dark: nordicDark },
 };

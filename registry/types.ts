@@ -1,4 +1,4 @@
-export type ThemeId = "editorial" | "nordic" | "data-terminal" | "productivity";
+export type ThemeId = "editorial" | "nordic" | "data-terminal" | "productivity" | "atlas";
 
 export type Mode = "light" | "dark";
 

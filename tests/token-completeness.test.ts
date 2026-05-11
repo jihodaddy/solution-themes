@@ -2,10 +2,10 @@ import { describe, it, expect } from "vitest";
 import { ALL_TOKEN_KEYS, type ThemeId } from "@/registry/types";
 import { allThemes } from "@/lib/themes";
 
-const REQUIRED_THEMES: ThemeId[] = ["editorial", "nordic", "data-terminal", "productivity"];
+const REQUIRED_THEMES: ThemeId[] = ["editorial", "nordic", "data-terminal", "productivity", "atlas"];
 
 describe("token completeness", () => {
-  it("includes all 4 required themes", () => {
+  it("includes all 5 required themes", () => {
     const ids = allThemes.map((t) => t.id).sort();
     expect(ids).toEqual([...REQUIRED_THEMES].sort());
   });

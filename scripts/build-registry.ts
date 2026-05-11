@@ -19,6 +19,14 @@ const VARIANTS: VariantSpec[] = [
   { name: "stat-card-directional", sourcePath: "registry/components/stat-card-directional.tsx", npmDeps: [] },
   { name: "table-compact", sourcePath: "registry/components/table-compact.tsx", npmDeps: [] },
   { name: "theme-switcher", sourcePath: "registry/components/theme-switcher.tsx", npmDeps: ["lucide-react"] },
+  { name: "step-indicator", sourcePath: "registry/components/step-indicator.tsx", npmDeps: ["lucide-react"] },
+  { name: "toggle-switch", sourcePath: "registry/components/toggle-switch.tsx", npmDeps: [] },
+  { name: "sortable-header", sourcePath: "registry/components/sortable-header.tsx", npmDeps: ["lucide-react"] },
+  { name: "page-header", sourcePath: "registry/components/page-header.tsx", npmDeps: ["lucide-react"] },
+  { name: "field", sourcePath: "registry/components/field.tsx", npmDeps: [] },
+  { name: "empty-state", sourcePath: "registry/components/empty-state.tsx", npmDeps: [] },
+  { name: "sparkline", sourcePath: "registry/components/sparkline.tsx", npmDeps: [] },
+  { name: "mini-bar-chart", sourcePath: "registry/components/mini-bar-chart.tsx", npmDeps: [] },
 ];
 
 export type RegistryItem = {
