@@ -47,3 +47,7 @@ next-env.d.ts
 # IDE
 .vscode/
 .idea/
+
+# Package manager artifacts — this project uses pnpm, not npm/yarn
+package-lock.json
+yarn.lock
